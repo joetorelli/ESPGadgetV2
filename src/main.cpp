@@ -20,6 +20,12 @@ Includes
 //#include "TFT_eSPI.h" // ESP32 Hardware-specific library
 #include "settings.h" // The order is important!
 #include "bmp_functions.h"
+#include "TaskScheduler.h"
+
+/**********************************************
+  Sub/Function Declarations
+**********************************************/
+void refresh_readings_update();
 
 /**********************************************
   Pin Definitions
@@ -44,9 +50,14 @@ Adafruit_BME280 bme;
 TFT_eSPI tft = TFT_eSPI(); // create object (tft), of type (TFT_eSPI), from class (TFT_eSPI())
 uint16_t BackGroundColor = TFT_BLACK;
 uint16_t ForeGroundColor = TFT_WHITE;
-/**********************************************
-  Sub/Function Declarations
-**********************************************/
+
+/***************  task scheduler  **************************/
+Task t1_bme(2000, TASK_FOREVER, &refresh_readings_update);  //can not pass vars with pointer in this function
+//Task t2_clock(1000, TASK_FOREVER, &refresh_clock);
+//Task t5_indicators(2000, TASK_FOREVER, &indicators);
+Scheduler runner;
+
+
 
 /*************************  Setup   ******************************/
 
@@ -77,12 +88,18 @@ void setup()
   {
     Serial.println("Found BME280");
   }
+// add tasks to runner
+runner.addTask(t1_bme);
+t1_bme.enable();
+
 
   tft.init();                                         // initialize tft
   tft.setRotation(1);                                 // orientation
   tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
-  tft.fillScreen(BackGroundColor);                    // clear screen with background color
-  tft.setCursor(0, 0);                                // position cursor to top left
+  tft.fillScreen(
+    BackGroundColor);                    // clear screen with background color
+  tft.
+  setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting BME sensor");                 // print text
   delay(1000);
@@ -96,11 +113,20 @@ void setup()
 void loop()
 {
 
-  refresh_readings(&bme, &tft);
+runner.execute();
 
-  delay(2000);
+  
+
+  //delay(2000);
 }
 
 /**********************************************
   Sub/Function Definitions
 **********************************************/
+// use this function as a wrapper to pass the vars
+void refresh_readings_update()
+{
+
+refresh_readings(&bme, &tft);
+
+}

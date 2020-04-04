@@ -1,4 +1,4 @@
-// Bodmers BMP image rendering function
+//  BMP image rendering function
 #include "bmp_functions.h"
 
 
