@@ -52,12 +52,10 @@ uint16_t BackGroundColor = TFT_BLACK;
 uint16_t ForeGroundColor = TFT_WHITE;
 
 /***************  task scheduler  **************************/
-Task t1_bme(2000, TASK_FOREVER, &refresh_readings_update);  //can not pass vars with pointer in this function
+Task t1_bme(2000, TASK_FOREVER, &refresh_readings_update); //can not pass vars with pointer in this function
 //Task t2_clock(1000, TASK_FOREVER, &refresh_clock);
 //Task t5_indicators(2000, TASK_FOREVER, &indicators);
 Scheduler runner;
-
-
 
 /*************************  Setup   ******************************/
 
@@ -88,18 +86,15 @@ void setup()
   {
     Serial.println("Found BME280");
   }
-// add tasks to runner
-runner.addTask(t1_bme);
-t1_bme.enable();
-
+  // add tasks to runner
+  runner.addTask(t1_bme);
+  t1_bme.enable();
 
   tft.init();                                         // initialize tft
   tft.setRotation(1);                                 // orientation
   tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
-  tft.fillScreen(
-    BackGroundColor);                    // clear screen with background color
-  tft.
-  setCursor(0, 0);                                // position cursor to top left
+  tft.fillScreen(BackGroundColor);                    // clear screen with background color
+  tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting BME sensor");                 // print text
   delay(1000);
@@ -113,9 +108,7 @@ t1_bme.enable();
 void loop()
 {
 
-runner.execute();
-
-  
+  runner.execute();
 
   //delay(2000);
 }
@@ -127,6 +120,5 @@ runner.execute();
 void refresh_readings_update()
 {
 
-refresh_readings(&bme, &tft);
-
+  refresh_readings(&bme, &tft);
 }
