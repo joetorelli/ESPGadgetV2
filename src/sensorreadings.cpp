@@ -31,8 +31,9 @@ void refresh_readings(Adafruit_BME280 *bme, TFT_eSPI *tft)
   //tft->setRotation(1);
   tft->setCursor(5, 5);
   tft->println("Right Now...");
-  tft->setTextColor(TFT_YELLOW, BackGroundColor);
+  tft->fillRect(5, 5, 100, 30, BackGroundColor); //clear out old text
 
+  tft->setTextColor(TFT_YELLOW, BackGroundColor);
   tft->loadFont("NotoSansBold15");
   tft->setTextColor(ForeGroundColor, BackGroundColor);
   tft->setRotation(1);
