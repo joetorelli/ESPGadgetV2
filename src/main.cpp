@@ -21,6 +21,7 @@ Includes
 #include "settings.h" // The order is important!
 #include "bmp_functions.h"
 #include "TaskScheduler.h"
+#include <network_config.h>
 
 /**********************************************
   Sub/Function Declarations
@@ -89,6 +90,9 @@ void setup()
   // add tasks to runner
   runner.addTask(t1_bme);
   t1_bme.enable();
+
+  //adafruit IO connect to wifi
+  AdaIO.connect();
 
   tft.init();                                         // initialize tft
   tft.setRotation(1);                                 // orientation
