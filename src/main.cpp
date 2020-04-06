@@ -82,29 +82,52 @@ void setup()
       yield(); // Stay here twiddling thumbs waiting
   }
 
+  /*************** set tft screen  *************/
+  tft.init();                                         // initialize tft
+  tft.setRotation(1);                                 // orientation
+  tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
+  tft.fillScreen(BackGroundColor);                    // clear screen with background color
+  tft.setCursor(0, 0);                                // position cursor to top left
+  tft.println("Hello");                               // print text
+  tft.println("Starting IOT Gadget");                 // print text
+  drawBmp("/te.bmp", 150, 160, &tft);                 //show bitmap
+
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
-  bool status; // connect TFT status
+  bool status; // connect status
 
   /**********  init i2c sensor  ************/
+
+  tft.println("Init Sensor");
+
   status = bme.begin(BME280_ADDRESS_ALTERNATE); // get status of tft
 
   if (!status) // test status
   {
-
+    tft.println("Can't find BME280");
     Serial.println("Can't find BME280, it may have fell on the floor");
     //while (1);
   }
   else
   {
+    tft.println("Found BME280");
     Serial.println("Found BME280");
   }
 
   /*********  adafruit IO connect to wifi  ***********/
-  AdaIO.connect();
 
+  tft.println("Init WIFI");
+  AdaIO.connect();
+  tft.println("WIFI connected");
   /******* set up clock ************/
-  waitForSync(); // goto time server
+  tft.print("Getting Time. Please Wait...");
+
+  do
+  {
+    tft.print(".");
+    //delay(500);
+  } while (!waitForSync(1));
+
   CST_TimeZone.setLocation("America/Chicago");
 
   /************* set up task runner  *************/
@@ -114,19 +137,8 @@ void setup()
   t1_bme.enable();
   t2_clock.enable();
 
-  /*************** set tft screen  *************/
-  tft.init();                                         // initialize tft
-  tft.setRotation(1);                                 // orientation
-  tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
-  tft.fillScreen(BackGroundColor);                    // clear screen with background color
-  tft.setCursor(0, 0);                                // position cursor to top left
-  tft.println("Hello");                               // print text
-  tft.println("Starting BME sensor");                 // print text
-  delay(1000);
   tft.fillScreen(BackGroundColor);
   drawBmp("/te.bmp", 150, 160, &tft);
-
-  delay(1000);
 }
 
 /**************************  loop  *******************/
