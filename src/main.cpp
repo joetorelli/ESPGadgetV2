@@ -26,7 +26,10 @@ Includes
 /**********************************************
   Sub/Function Declarations
 **********************************************/
+
+//tasks callback functions
 void refresh_readings_update();
+void clock_update();
 
 /**********************************************
   Pin Definitions
@@ -39,9 +42,11 @@ void refresh_readings_update();
 /********************* Objects and vars  *******************/
 
 /**************************************   BME  ****************************/
+
 // used for calcs
 #define SEALEVEL_HPA (1013.25)
 
+//temp sensor object
 Adafruit_BME280 bme;
 
 // BME280_ADDRESS = 0x77
@@ -54,17 +59,22 @@ uint16_t ForeGroundColor = TFT_WHITE;
 
 /***************  task scheduler  **************************/
 Task t1_bme(2000, TASK_FOREVER, &refresh_readings_update); //can not pass vars with pointer in this function
-//Task t2_clock(1000, TASK_FOREVER, &refresh_clock);
+Task t2_clock(1000, TASK_FOREVER, &clock_update);
 //Task t5_indicators(2000, TASK_FOREVER, &indicators);
 Scheduler runner;
+
+/**************  clock  ********************/
+Timezone CST_TimeZone; //object for time zone
 
 /*************************  Setup   ******************************/
 
 void setup()
 {
 
+  //serial port
   Serial.begin(115200);
 
+  /********* file system  **********/
   if (!SPIFFS.begin())
   {
     tft.println("SPIFFS initialisation failed!");
@@ -72,9 +82,11 @@ void setup()
       yield(); // Stay here twiddling thumbs waiting
   }
 
+  /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
   bool status; // connect TFT status
 
+  /**********  init i2c sensor  ************/
   status = bme.begin(BME280_ADDRESS_ALTERNATE); // get status of tft
 
   if (!status) // test status
@@ -87,13 +99,22 @@ void setup()
   {
     Serial.println("Found BME280");
   }
-  // add tasks to runner
-  runner.addTask(t1_bme);
-  t1_bme.enable();
 
-  //adafruit IO connect to wifi
+  /*********  adafruit IO connect to wifi  ***********/
   AdaIO.connect();
 
+  /******* set up clock ************/
+  waitForSync(); // goto time server
+  CST_TimeZone.setLocation("America/Chicago");
+
+  /************* set up task runner  *************/
+  runner.init();
+  runner.addTask(t1_bme);
+  runner.addTask(t2_clock);
+  t1_bme.enable();
+  t2_clock.enable();
+
+  /*************** set tft screen  *************/
   tft.init();                                         // initialize tft
   tft.setRotation(1);                                 // orientation
   tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
@@ -112,6 +133,7 @@ void setup()
 void loop()
 {
 
+  /***********  run tasks  **************/
   runner.execute();
 
   //delay(2000);
@@ -120,9 +142,17 @@ void loop()
 /**********************************************
   Sub/Function Definitions
 **********************************************/
-// use this function as a wrapper to pass the vars
+// use these function as a wrapper to pass the vars
+
+//update temp to screen
 void refresh_readings_update()
 {
-
   refresh_readings(&bme, &tft);
+}
+
+// update clock to screen
+void clock_update()
+{
+
+  refresh_clock(&tft, &CST_TimeZone);
 }
