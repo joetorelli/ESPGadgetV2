@@ -119,6 +119,7 @@ void setup()
   tft.println("Init WIFI");
   AdaIO.connect();
   tft.println("WIFI connected");
+
   /******* set up clock ************/
   tft.print("Getting Time. Please Wait...");
 
