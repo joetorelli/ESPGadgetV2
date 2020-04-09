@@ -121,9 +121,11 @@ void setup()
   }
 
   /*********  adafruit IO connect to wifi  ***********/
+  wifiStatus(&tft, &AdaIO);
 
   tft.print("Init WIFI");
   AdaIO.connect();
+  wifiStatus(&tft, &AdaIO);
   //wait for connection
   do
   {

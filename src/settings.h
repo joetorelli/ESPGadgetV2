@@ -7,7 +7,11 @@
 #include "AdafruitIO_WiFi.h"
 #include "network_config.h"
 #include "ezTime.h" //ntp and other functions
-#include "clock.h"  //clock settings
+#include "aux_functions.h"
+#include "clock.h" //clock settings
+
+#define LED_PIN 17
+#define IFTTT 16
 
 //used for oled display testing
 #include <Adafruit_GFX.h>

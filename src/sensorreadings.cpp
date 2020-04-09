@@ -24,7 +24,7 @@ void refresh_readings(Adafruit_BME280 *bme,
   float f_pressure = 30;
   float f_altitude = 40;
 
-  //digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_PIN, HIGH);
 
   //read sensor ad load vars
   f_temperature = bme->readTemperature();
@@ -93,7 +93,7 @@ void refresh_readings(Adafruit_BME280 *bme,
   //Pres->save(f_pressure);
   //Alt->save(f_altitude);
 
-  //digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_PIN, LOW);
   //print to serial port
   Serial.println("-----v2----");
 }
