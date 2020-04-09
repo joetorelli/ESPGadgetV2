@@ -2,7 +2,13 @@
 #include <Arduino.h>
 #include "sensor_readings.h"
 
-void refresh_readings(Adafruit_BME280 *bme, TFT_eSPI *tft)
+//void refresh_readings(Adafruit_BME280 *bme, TFT_eSPI *tft)
+void refresh_readings(Adafruit_BME280 *bme,
+                      TFT_eSPI *tft,
+                      AdafruitIO_Feed *Temp,
+                      AdafruitIO_Feed *Hum,
+                      AdafruitIO_Feed *Pres,
+                      AdafruitIO_Feed *Alt)
 {
 
   uint16_t BackGroundColor = TFT_BLACK;
@@ -80,6 +86,12 @@ void refresh_readings(Adafruit_BME280 *bme, TFT_eSPI *tft)
   tft->setCursor(5, 170);
   tft->print(f_altitude);
   tft->println(" m");
+
+  /******  Send Data to AdaIO   ******/
+  Temp->save(f_temperature);
+  Hum->save(f_humidity);
+  Pres->save(f_pressure);
+  Alt->save(f_altitude);
 
   //digitalWrite(LED_BUILTIN, LOW);
   //print to serial port

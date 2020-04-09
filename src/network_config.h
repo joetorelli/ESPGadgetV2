@@ -7,4 +7,4 @@
 
 #include "AdafruitIO_WiFi.h"
 
-AdafruitIO_WiFi AdaIO(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASSWORD);
+//AdafruitIO_WiFi AdaIO(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASSWORD);

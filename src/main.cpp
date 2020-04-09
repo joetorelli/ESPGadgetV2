@@ -16,12 +16,11 @@ Includes
 **********************************************************/
 
 #include <Arduino.h>
-#include "sensor_readings.h"
-//#include "TFT_eSPI.h" // ESP32 Hardware-specific library
-#include "settings.h" // The order is important!
+#include "settings.h"        // The order is important!
+#include "sensor_readings.h" // The order is important!
 #include "bmp_functions.h"
-#include "TaskScheduler.h"
-#include <network_config.h>
+#include <TaskScheduler.h>
+#include "network_config.h"
 
 /**********************************************
   Sub/Function Declarations
@@ -65,6 +64,13 @@ Scheduler runner;
 
 /**************  clock  ********************/
 Timezone CST_TimeZone; //object for time zone
+
+/**************  adafruit.io feeds  ************************/
+AdafruitIO_WiFi AdaIO(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASSWORD);
+AdafruitIO_Feed *Temperature = AdaIO.feed("iogadget.temperature");
+AdafruitIO_Feed *Humidity = AdaIO.feed("iogadget.humidity");
+AdafruitIO_Feed *Pressure = AdaIO.feed("iogadget.pressure");
+AdafruitIO_Feed *Altitude = AdaIO.feed("iogadget.altitude");
 
 /*************************  Setup   ******************************/
 
@@ -118,15 +124,21 @@ void setup()
 
   tft.println("Init WIFI");
   AdaIO.connect();
+  //wait for connection
+  do
+  {
+    tft.print(".");
+    delay(500);
+  } while (AdaIO.status() < AIO_CONNECTED);
+
   tft.println("WIFI connected");
 
   /******* set up clock ************/
-  tft.print("Getting Time. Please Wait...");
+  tft.print("Getting Time. Please Wait");
 
   do
   {
     tft.print(".");
-    //delay(500);
   } while (!waitForSync(1));
 
   CST_TimeZone.setLocation("America/Chicago");
@@ -138,6 +150,7 @@ void setup()
   t1_bme.enable();
   t2_clock.enable();
 
+  //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
   drawBmp("/te.bmp", 150, 160, &tft);
 }
@@ -160,7 +173,12 @@ void loop()
 //update temp to screen
 void refresh_readings_update()
 {
-  refresh_readings(&bme, &tft);
+  refresh_readings(&bme,
+                   &tft,
+                   Temperature,
+                   Humidity,
+                   Pressure,
+                   Altitude);
 }
 
 // update clock to screen
