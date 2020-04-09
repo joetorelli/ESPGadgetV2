@@ -6,9 +6,9 @@
 void refresh_readings(Adafruit_BME280 *bme,
                       TFT_eSPI *tft,
                       AdafruitIO_Feed *Temp,
-                      AdafruitIO_Feed *Hum,
-                      AdafruitIO_Feed *Pres,
-                      AdafruitIO_Feed *Alt)
+                      AdafruitIO_Feed *Hum) //,
+                                            //AdafruitIO_Feed *Pres,
+                                            // AdafruitIO_Feed *Alt)
 {
 
   uint16_t BackGroundColor = TFT_BLACK;
@@ -90,8 +90,8 @@ void refresh_readings(Adafruit_BME280 *bme,
   /******  Send Data to AdaIO   ******/
   Temp->save(f_temperature);
   Hum->save(f_humidity);
-  Pres->save(f_pressure);
-  Alt->save(f_altitude);
+  //Pres->save(f_pressure);
+  //Alt->save(f_altitude);
 
   //digitalWrite(LED_BUILTIN, LOW);
   //print to serial port

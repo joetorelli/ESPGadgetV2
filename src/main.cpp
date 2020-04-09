@@ -57,7 +57,7 @@ uint16_t BackGroundColor = TFT_BLACK;
 uint16_t ForeGroundColor = TFT_WHITE;
 
 /***************  task scheduler  **************************/
-Task t1_bme(2000, TASK_FOREVER, &refresh_readings_update); //can not pass vars with pointer in this function
+Task t1_AdaIOUpdate(10000, TASK_FOREVER, &refresh_readings_update); //can not pass vars with pointer in this function
 Task t2_clock(1000, TASK_FOREVER, &clock_update);
 //Task t5_indicators(2000, TASK_FOREVER, &indicators);
 Scheduler runner;
@@ -69,8 +69,8 @@ Timezone CST_TimeZone; //object for time zone
 AdafruitIO_WiFi AdaIO(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASSWORD);
 AdafruitIO_Feed *Temperature = AdaIO.feed("iogadget.temperature");
 AdafruitIO_Feed *Humidity = AdaIO.feed("iogadget.humidity");
-AdafruitIO_Feed *Pressure = AdaIO.feed("iogadget.pressure");
-AdafruitIO_Feed *Altitude = AdaIO.feed("iogadget.altitude");
+//AdafruitIO_Feed *Pressure = AdaIO.feed("iogadget.pressure");
+//AdafruitIO_Feed *Altitude = AdaIO.feed("iogadget.altitude");
 
 /*************************  Setup   ******************************/
 
@@ -122,7 +122,7 @@ void setup()
 
   /*********  adafruit IO connect to wifi  ***********/
 
-  tft.println("Init WIFI");
+  tft.print("Init WIFI");
   AdaIO.connect();
   //wait for connection
   do
@@ -132,7 +132,7 @@ void setup()
   } while (AdaIO.status() < AIO_CONNECTED);
 
   tft.println("WIFI connected");
-
+  delay(500);
   /******* set up clock ************/
   tft.print("Getting Time. Please Wait");
 
@@ -145,9 +145,9 @@ void setup()
 
   /************* set up task runner  *************/
   runner.init();
-  runner.addTask(t1_bme);
+  runner.addTask(t1_AdaIOUpdate);
   runner.addTask(t2_clock);
-  t1_bme.enable();
+  t1_AdaIOUpdate.enable();
   t2_clock.enable();
 
   //clear tft and load bmp
@@ -169,6 +169,7 @@ void loop()
   Sub/Function Definitions
 **********************************************/
 // use these function as a wrapper to pass the vars
+// these are called from Task Scheduler
 
 //update temp to screen
 void refresh_readings_update()
@@ -176,9 +177,9 @@ void refresh_readings_update()
   refresh_readings(&bme,
                    &tft,
                    Temperature,
-                   Humidity,
-                   Pressure,
-                   Altitude);
+                   Humidity); //,
+                              //Pressure,
+                              //Altitude);
 }
 
 // update clock to screen
