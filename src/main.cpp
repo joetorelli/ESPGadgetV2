@@ -155,6 +155,7 @@ void setup()
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
   drawBmp("/te.bmp", 150, 160, &tft);
+  wifiStatus(&tft, &AdaIO);
 }
 
 /**************************  loop  *******************/
@@ -182,6 +183,7 @@ void refresh_readings_update()
                    Humidity); //,
                               //Pressure,
                               //Altitude);
+  wifiStatus(&tft, &AdaIO);
 }
 
 // update clock to screen
