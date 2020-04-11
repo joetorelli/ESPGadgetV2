@@ -9,9 +9,11 @@
 #include "ezTime.h" //ntp and other functions
 #include "aux_functions.h"
 #include "clock.h" //clock settings
+#include "EEPROM.h"
 
 #define LED_PIN 17
 #define IFTTT 16
+#define EEPROM_SIZE 2
 
 //used for oled display testing
 #include <Adafruit_GFX.h>

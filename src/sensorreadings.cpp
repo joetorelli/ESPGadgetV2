@@ -93,97 +93,9 @@ void refresh_readings(Adafruit_BME280 *bme,
   //Pres->save(f_pressure);
   //Alt->save(f_altitude);
 
+  //update AdaIO count
+  DisplayTheCount(tft);
   digitalWrite(LED_PIN, LOW);
   //print to serial port
   Serial.println("-----v2----");
-}
-
-/************  ScanI2C  ***************/
-void ScanI2C(Adafruit_SSD1306 *OLED)
-//void ScanI2C()
-{
-
-  OLED->clearDisplay();
-  OLED->setTextSize(1);
-  OLED->setCursor(0, 0);
-
-  byte DeviceError, DeviceAddress;
-  int NumberOfDevices;
-
-  Serial.println("Scanning...");
-  // OLED->println("Scanning I2C...");
-  // OLED->display();
-
-  NumberOfDevices = 0;
-
-  for (DeviceAddress = 1; DeviceAddress < 127; DeviceAddress++)
-  {
-
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
-    // a device did acknowledge to the DeviceAddress.
-    Wire.beginTransmission(DeviceAddress);
-    DeviceError = Wire.endTransmission();
-
-    if (DeviceError == 0)
-    {
-
-      Serial.print("I2C device found at DeviceAddress 0x");
-      Serial.print("0");
-      Serial.println(DeviceAddress, HEX);
-
-      switch (DeviceAddress)
-      {
-      case 0x3C:
-        OLED->print("OLED @ DeviceAdr 0x");
-        OLED->println(String(DeviceAddress, HEX));
-        break;
-
-      case 0x76:
-        OLED->print("BME  @ DeviceAdr 0x");
-        OLED->println(String(DeviceAddress, HEX));
-        break;
-
-      case 0x77:
-        OLED->print("BME  @ DeviceAdr 0x");
-        OLED->println(String(DeviceAddress, HEX));
-        break;
-
-      default:
-        OLED->print("I2C  @ DeviceAdr 0x");
-        OLED->println(String(DeviceAddress, HEX));
-        break;
-      }
-
-      NumberOfDevices++;
-      OLED->display();
-    }
-
-    else if (DeviceError == 4)
-    {
-
-      Serial.print("Unknow DeviceError at DeviceAddress 0x");
-      OLED->print("Unknow DeviceError at DeviceAddress 0x");
-      //Serial.print("0");
-      Serial.println(DeviceAddress, HEX);
-      OLED->println(String(DeviceAddress, HEX));
-      OLED->display();
-    }
-  }
-
-  if (NumberOfDevices == 0)
-  {
-
-    Serial.println("No I2C devices found\n");
-    OLED->print("No I2C devices found");
-  }
-  else
-  {
-
-    Serial.println("done\n");
-
-    // OLED->print("done");
-  }
-
-  OLED->display();
 }
