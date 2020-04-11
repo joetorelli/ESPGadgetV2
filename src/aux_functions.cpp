@@ -1,4 +1,5 @@
 #include "aux_functions.h"
+int DisplayCounter = 0;
 
 void wifiStatus(TFT_eSPI *tft,
                 AdafruitIO_WiFi *AdaIO)
@@ -45,4 +46,29 @@ const char *wl_status_to_string(wl_status_t status)
     default:
         break;
     }
+}
+
+void DisplayTheCount(TFT_eSPI *tft)
+{
+
+    int MaxPosts = EEPROM.readInt(0);
+
+    DisplayCounter++;
+
+    if(DisplayCounter > MaxPosts)
+    {
+        MaxPosts = DisplayCounter;
+        EEPROM.writeInt(0,MaxPosts);
+        EEPROM.commit();
+    }
+
+    tft->loadFont("NotoSansBold15");
+    tft->setTextColor(TFT_LIGHTGREY,        TFT_BLACK);
+    tft->fillRect(220,0,90,20,TFT_BLACK);
+    tft->setCursor(220,0);
+    tft->print(DisplayCounter);
+    tft->print("/");
+    tft->print(EEPROM.readInt(0));
+
+
 }

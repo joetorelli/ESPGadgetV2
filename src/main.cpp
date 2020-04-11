@@ -79,6 +79,18 @@ void setup()
 
   //serial port
   Serial.begin(115200);
+  pinMode(LED_BUILTIN, OUTPUT);
+   //init eeprom
+  EEPROM.begin(EEPROM_SIZE);
+  // check for valid number
+  if (EEPROM.readInt(0) < 0)
+  {
+  //if not valid write 0
+    EEPROM.writeInt(0,0);
+    EEPROM.commit();
+  }
+
+
 
   /********* file system  **********/
   if (!SPIFFS.begin())
