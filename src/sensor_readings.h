@@ -15,13 +15,14 @@
 void refresh_readings(Adafruit_BME280 *bme,
                       TFT_eSPI *tft,
                       AdafruitIO_Feed *Temp,
-                      AdafruitIO_Feed *Hum); //,
-                                             //AdafruitIO_Feed *Pres,
-                                             //AdafruitIO_Feed *Alt);
+                      AdafruitIO_Feed *Hum,
+                      AdafruitIO_Feed *Pres,
+                    AdafruitIO_Feed *Alt);
+
 //void refresh_readings(Adafruit_BME280 *bme, Adafruit_SSD1306 *OLED, TFT_eSPI *tft);
 //void refresh_readings(Adafruit_BME280 *bme, Adafruit_SSD1306 *OLED);
 //void ScanI2C(Adafruit_SSD1306 *OLED);
-void ScanI2C();
+//void ScanI2C();
 
 //void refresh_readings(Adafruit_BME280 *bme);
 //void refresh_readings(Adafruit_BME280 *bme, TFT_eSPI *tft);

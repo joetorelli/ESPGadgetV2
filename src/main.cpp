@@ -26,7 +26,8 @@ Includes
   Sub/Function Declarations
 **********************************************/
 
-//tasks callback functions
+/********  tasks callback functions  *********/
+//update TFT
 void refresh_readings_update();
 void clock_update();
 
@@ -69,28 +70,45 @@ Timezone CST_TimeZone; //object for time zone
 AdafruitIO_WiFi AdaIO(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASSWORD);
 AdafruitIO_Feed *Temperature = AdaIO.feed("iogadget.temperature");
 AdafruitIO_Feed *Humidity = AdaIO.feed("iogadget.humidity");
-//AdafruitIO_Feed *Pressure = AdaIO.feed("iogadget.pressure");
-//AdafruitIO_Feed *Altitude = AdaIO.feed("iogadget.altitude");
+AdafruitIO_Feed *Pressure = AdaIO.feed("iogadget.pressure");
+AdafruitIO_Feed *Altitude = AdaIO.feed("iogadget.altitude");
 
 /*************************  Setup   ******************************/
 
+
+int addr = 0;
 void setup()
 {
 
   //serial port
   Serial.begin(115200);
-  pinMode(LED_BUILTIN,OUTPUT);
+  pinMode(LED_PIN,OUTPUT);
 
   //init eeprom
-  EEPROM.begin(EEPROM_SIZE);
+ if (!EEPROM.begin(EEPROM_SIZE))
+ {
+   Serial.println("EEPROM INit Failed");
+   delay(10000);
+ }
+ /* 
   //test for bad alue (neg number)
   if (EEPROM.readInt(0) < 0)
   {
     //IF ned then clear
-    EEPROM.writeInt(0,0);
+    EEPROM.writeInt(0,5);
     EEPROM.commit();
+    Serial.println("Inside if ");
   }
-  
+*/
+for (int  i = 0; i < EEPROM_SIZE; i++)
+{
+  Serial.print(int(EEPROM.readInt(i)));
+  Serial.print(" ");
+}
+
+
+
+
 
   /********* file system  **********/
   if (!SPIFFS.begin())
@@ -133,9 +151,9 @@ void setup()
   }
 
   /*********  adafruit IO connect to wifi  ***********/
-  wifiStatus(&tft, &AdaIO);
 
-  tft.print("Init WIFI");
+tft.print("Init WIFI");
+  wifiStatus(&tft, &AdaIO);
   AdaIO.connect();
   wifiStatus(&tft, &AdaIO);
   //wait for connection
@@ -175,9 +193,30 @@ void loop()
 {
 
   /***********  run tasks  **************/
-  runner.execute();
+ runner.execute();
+/*
+int val = int(random(10020));
+  EEPROM.writeInt(addr, val);
+  delay(100);
+  Serial.print(val); Serial.print(" ");
+ addr = addr + 1;
+  if (addr == EEPROM_SIZE)
+  {
+    Serial.println();
+    addr = 0;
+    EEPROM.commit();
+    Serial.print(EEPROM_SIZE);
+    Serial.println(" bytes written on Flash . Values are:");
+    for (int i = 0; i < EEPROM_SIZE; i++)
+    {
+      Serial.print(int(EEPROM.readInt(i))); Serial.print(" ");
+      delay(100);
+    }
+    Serial.println(); Serial.println("----------------------------------");
+  }
 
-  //delay(2000);
+  delay(500);  
+*/
 }
 
 /**********************************************
@@ -192,9 +231,10 @@ void refresh_readings_update()
   refresh_readings(&bme,
                    &tft,
                    Temperature,
-                   Humidity); //,
-                              //Pressure,
-                              //Altitude);
+                   Humidity,
+                  Pressure,
+                  Altitude);
+
   wifiStatus(&tft, &AdaIO);
 }
 
