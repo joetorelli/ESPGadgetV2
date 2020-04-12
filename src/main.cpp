@@ -126,7 +126,7 @@ for (int  i = 0; i < EEPROM_SIZE; i++)
   tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting IOT Gadget");                 // print text
-  drawBmp("/MMKLOGO3Letter.bmp", 150, 160, &tft);                 //show bitmap
+  drawBmp("/MMK.bmp", 150, 160, &tft);                 //show bitmap
 
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
@@ -184,7 +184,7 @@ tft.print("Init WIFI");
 
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
-  drawBmp("/MMKLOGO3Letter.bmp", 150, 160, &tft);
+  drawBmp("/MMK.bmp", 150, 160, &tft);
   wifiStatus(&tft, &AdaIO);
 }
 
