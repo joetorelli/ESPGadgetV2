@@ -121,7 +121,8 @@ void setup()
   tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting IOT Gadget");                 // print text
-  drawBmp("/MMK.bmp", 150, 160, &tft);                //show bitmap
+ drawBmp("/mmk.bmp", 75, 75, &tft);
+  drawBmp("/te.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
@@ -179,7 +180,9 @@ void setup()
 
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
-  drawBmp("/MMK.bmp", 150, 160, &tft);
+  drawBmp("/mmk.bmp", 75, 75, &tft);
+  drawBmp("/te.bmp", 150, 160, &tft);   //150, 160, &tft);
+  
   wifiStatus(&tft, &AdaIO);
 }
 
