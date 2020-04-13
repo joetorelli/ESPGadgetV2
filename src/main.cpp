@@ -75,22 +75,21 @@ AdafruitIO_Feed *Altitude = AdaIO.feed("iogadget.altitude");
 
 /*************************  Setup   ******************************/
 
-
 int addr = 0;
 void setup()
 {
 
   //serial port
   Serial.begin(115200);
-  pinMode(LED_PIN,OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 
   //init eeprom
- if (!EEPROM.begin(EEPROM_SIZE))
- {
-   Serial.println("EEPROM INit Failed");
-   delay(10000);
- }
- /* 
+  if (!EEPROM.begin(EEPROM_SIZE))
+  {
+    Serial.println("EEPROM INit Failed");
+    delay(10000);
+  }
+  /* 
   //test for bad alue (neg number)
   if (EEPROM.readInt(0) < 0)
   {
@@ -100,15 +99,11 @@ void setup()
     Serial.println("Inside if ");
   }
 */
-for (int  i = 0; i < EEPROM_SIZE; i++)
-{
-  Serial.print(int(EEPROM.readInt(i)));
-  Serial.print(" ");
-}
-
-
-
-
+  for (int i = 0; i < EEPROM_SIZE; i++)
+  {
+    Serial.print(int(EEPROM.readInt(i)));
+    Serial.print(" ");
+  }
 
   /********* file system  **********/
   if (!SPIFFS.begin())
@@ -126,7 +121,7 @@ for (int  i = 0; i < EEPROM_SIZE; i++)
   tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting IOT Gadget");                 // print text
-  drawBmp("/MMK.bmp", 150, 160, &tft);                 //show bitmap
+  drawBmp("/MMK.bmp", 150, 160, &tft);                //show bitmap
 
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
@@ -152,7 +147,7 @@ for (int  i = 0; i < EEPROM_SIZE; i++)
 
   /*********  adafruit IO connect to wifi  ***********/
 
-tft.print("Init WIFI");
+  tft.print("Init WIFI");
   wifiStatus(&tft, &AdaIO);
   AdaIO.connect();
   wifiStatus(&tft, &AdaIO);
@@ -193,8 +188,8 @@ void loop()
 {
 
   /***********  run tasks  **************/
- runner.execute();
-/*
+  runner.execute();
+  /*
 int val = int(random(10020));
   EEPROM.writeInt(addr, val);
   delay(100);
@@ -232,8 +227,8 @@ void refresh_readings_update()
                    &tft,
                    Temperature,
                    Humidity,
-                  Pressure,
-                  Altitude);
+                   Pressure,
+                   Altitude);
 
   wifiStatus(&tft, &AdaIO);
 }
