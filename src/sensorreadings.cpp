@@ -16,10 +16,10 @@ void refresh_readings(Adafruit_BME280 *bme,
 
 
   //Serial.println(" DEFAULT BME Reading //********/");
-  float f_temperature = 10;
-  float f_humidity = 20;
-  float f_pressure = 30;
-  float f_altitude = 40;
+  float f_temperature = 0;
+  float f_humidity = 0;
+  float f_pressure = 0;
+  float f_altitude = 0;
 
   digitalWrite(LED_PIN, HIGH);
 

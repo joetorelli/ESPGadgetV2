@@ -83,6 +83,8 @@ void setup()
   Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
 
+DEBUGPRINTLN("DEBUG Print Enabled");
+
   //init eeprom
   if (!EEPROM.begin(EEPROM_SIZE))
   {
@@ -104,6 +106,18 @@ void setup()
     Serial.print(int(EEPROM.readInt(i)));
     Serial.print(" ");
   }
+ /*************** set tft screen  *************/
+  tft.init();                                         // initialize tft
+  tft.setRotation(1);                                 // orientation
+  tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
+  tft.fillScreen(BackGroundColor);                    // clear screen with background color
+  tft.setCursor(0, 0);                                // position cursor to top left
+  tft.println("Hello");                               // print text
+  tft.println("Starting IOT Gadget");                 // print text
+ 
+  //drawBmp("/te.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
+
+
 
   /********* file system  **********/
   if (!SPIFFS.begin())
@@ -112,21 +126,17 @@ void setup()
     while (1)
       yield(); // Stay here twiddling thumbs waiting
   }
+drawBmp("/mmkbw3.jpg", 50, 50, &tft);
+drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
-  /*************** set tft screen  *************/
-  tft.init();                                         // initialize tft
-  tft.setRotation(1);                                 // orientation
-  tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
-  tft.fillScreen(BackGroundColor);                    // clear screen with background color
-  tft.setCursor(0, 0);                                // position cursor to top left
-  tft.println("Hello");                               // print text
-  tft.println("Starting IOT Gadget");                 // print text
- drawBmp("/mmk.bmp", 75, 75, &tft);
-  drawBmp("/te.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
+
+ 
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
   bool status; // connect status
+
+
 
   /**********  init i2c sensor  ************/
 
@@ -146,12 +156,13 @@ void setup()
     Serial.println("Found BME280");
   }
 
+
   /*********  adafruit IO connect to wifi  ***********/
 
-  tft.print("Init WIFI");
-  wifiStatus(&tft, &AdaIO);
+  tft.println("Init WIFI");
+  wifiStatusStart(&tft, &AdaIO);
   AdaIO.connect();
-  wifiStatus(&tft, &AdaIO);
+  //wifiStatusStart(&tft, &AdaIO);
   //wait for connection
   do
   {
@@ -159,6 +170,7 @@ void setup()
     delay(500);
   } while (AdaIO.status() < AIO_CONNECTED);
 
+  //tft.setCursor(5, 50);
   tft.println("WIFI connected");
   delay(500);
   /******* set up clock ************/
@@ -174,14 +186,14 @@ void setup()
   /************* set up task runner  *************/
   runner.init();
   runner.addTask(t1_AdaIOUpdate);
-  runner.addTask(t2_clock);
+  //runner.addTask(t2_clock);
   t1_AdaIOUpdate.enable();
   t2_clock.enable();
 
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
-  drawBmp("/mmk.bmp", 75, 75, &tft);
-  drawBmp("/te.bmp", 150, 160, &tft);   //150, 160, &tft);
+  drawBmp("/mmkbw3.jpg", 50, 50, &tft);
+  drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
   
   wifiStatus(&tft, &AdaIO);
 }

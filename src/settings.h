@@ -15,6 +15,9 @@
     #define EEPROM_SIZE 4
 #endif
 
+
+#define DEBUGLOG
+
 #ifdef DEBUGLOG
 
     #define DEBUGPRINT(x) Serial.print(x)
