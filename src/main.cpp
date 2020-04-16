@@ -127,7 +127,7 @@ DEBUGPRINTLN("DEBUG Print Enabled");
     while (1)
       yield(); // Stay here twiddling thumbs waiting
   }
-//drawBmp("/V4.bmp", 225, 190, &tft);
+drawBmp("/V4.bmp", 225, 190, &tft);
 //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
 
@@ -187,13 +187,13 @@ DEBUGPRINTLN("DEBUG Print Enabled");
   /************* set up task runner  *************/
   runner.init();
   runner.addTask(t1_AdaIOUpdate);
-  //runner.addTask(t2_clock);
+  runner.addTask(t2_clock);
   t1_AdaIOUpdate.enable();
   t2_clock.enable();
 
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
-  //drawBmp("/V4.bmp", 50, 50, &tft);
+  drawBmp("/V4.bmp", 225, 190, &tft);
   //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
   
   wifiStatus(&tft, &AdaIO);
