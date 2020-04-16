@@ -6,31 +6,28 @@
 void refresh_readings(Adafruit_BME280 *bme,
                       TFT_eSPI *tft,
                       AdafruitIO_Feed *Temp,
-                      AdafruitIO_Feed *Hum) //,
-                                            //AdafruitIO_Feed *Pres,
-                                            // AdafruitIO_Feed *Alt)
+                      AdafruitIO_Feed *Hum,
+                      AdafruitIO_Feed *Pres,
+                      AdafruitIO_Feed *Alt)
 {
 
   uint16_t BackGroundColor = TFT_BLACK;
   uint16_t ForeGroundColor = TFT_WHITE;
 
-  // OLED->clearDisplay();
-  // OLED->setTextSize(1);
-  // OLED->setCursor(0,0);
 
   //Serial.println(" DEFAULT BME Reading //********/");
-  float f_temperature = 10;
-  float f_humidity = 20;
-  float f_pressure = 30;
-  float f_altitude = 40;
+  float f_temperature = 0;
+  float f_humidity = 0;
+  float f_pressure = 0;
+  float f_altitude = 0;
 
   digitalWrite(LED_PIN, HIGH);
 
   //read sensor ad load vars
   f_temperature = bme->readTemperature();
   f_humidity = bme->readHumidity();
-  // f_pressure = bme->readPressure() / 100.0F;
-  // f_altitude = bme->readAltitude(SEALEVELPRESSURE_HPA);
+  f_pressure = bme->readPressure() / 100.0F;
+  f_altitude = bme->readAltitude(SEALEVELPRESSURE_HPA);
 
   Serial.println("TFT = Right Now...");
   //tft->setTextColor(ForeGroundColor, BackGroundColor);
@@ -93,8 +90,8 @@ void refresh_readings(Adafruit_BME280 *bme,
   //Pres->save(f_pressure);
   //Alt->save(f_altitude);
 
-DisplayTheCount(tft);
-
+  //update AdaIO count
+  DisplayTheCount(tft);
   digitalWrite(LED_PIN, LOW);
   //print to serial port
   Serial.println("-----v2----");
