@@ -13,7 +13,7 @@
 
 #define LED_PIN 17
 #define IFTTT 16
-#define EEPROM_SIZE 2
+#define EEPROM_SIZE 4
 
 //used for oled display testing
 //#include <Adafruit_GFX.h>

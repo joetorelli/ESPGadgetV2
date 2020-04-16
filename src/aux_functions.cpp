@@ -55,12 +55,12 @@ void DisplayTheCount(TFT_eSPI *tft)
 
     DisplayCounter++;
 
-    if(DisplayCounter > MaxPosts)
-    {
+    //if(DisplayCounter > MaxPosts)
+   //{
         MaxPosts = DisplayCounter;
         EEPROM.writeInt(0,MaxPosts);
         EEPROM.commit();
-    }
+    //}
 
     tft->loadFont("NotoSansBold15");
     tft->setTextColor(TFT_LIGHTGREY,        TFT_BLACK);
