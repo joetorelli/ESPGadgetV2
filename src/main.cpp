@@ -126,8 +126,8 @@ DEBUGPRINTLN("DEBUG Print Enabled");
     while (1)
       yield(); // Stay here twiddling thumbs waiting
   }
-drawBmp("/mmkbw3.jpg", 50, 50, &tft);
-drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
+drawBmp("/mmk24.bmp", 50, 50, &tft);
+//drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
 
 
@@ -192,8 +192,8 @@ drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bit
 
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
-  drawBmp("/mmkbw3.jpg", 50, 50, &tft);
-  drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
+  drawBmp("/mmk24.bmp", 50, 50, &tft);
+  //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
   
   wifiStatus(&tft, &AdaIO);
 }
