@@ -81,22 +81,7 @@ void setup()
 
   //serial port
   Serial.begin(115200);
-<<<<<<< HEAD
-  pinMode(LED_BUILTIN, OUTPUT);
-   //init eeprom
-  EEPROM.begin(EEPROM_SIZE);
-  // check for valid number
-  if (EEPROM.readInt(0) < 0)
-  {
-  //if not valid write 0
-    EEPROM.writeInt(0,0);
-    EEPROM.commit();
-  }
-
-
-=======
   pinMode(LED_PIN, OUTPUT);
->>>>>>> BMP_Test
 
 DEBUGPRINTLN("DEBUG Print Enabled");
 
@@ -129,9 +114,7 @@ DEBUGPRINTLN("DEBUG Print Enabled");
   tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting IOT Gadget");                 // print text
-<<<<<<< HEAD
-  drawBmp("/V4.bmp", 225, 190, &tft);                 //show bitmap
-=======
+ // drawBmp("/V4.bmp", 225, 190, &tft);                 //show bitmap
  
   //drawBmp("/te.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
@@ -144,9 +127,8 @@ DEBUGPRINTLN("DEBUG Print Enabled");
     while (1)
       yield(); // Stay here twiddling thumbs waiting
   }
-drawBmp("/mmk24.bmp", 50, 50, &tft);
+//drawBmp("/V4.bmp", 225, 190, &tft);
 //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
->>>>>>> BMP_Test
 
 
 
@@ -211,13 +193,9 @@ drawBmp("/mmk24.bmp", 50, 50, &tft);
 
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
-<<<<<<< HEAD
-  drawBmp("/V4.bmp", 225, 190, &tft);
-=======
-  drawBmp("/mmk24.bmp", 50, 50, &tft);
+  //drawBmp("/V4.bmp", 50, 50, &tft);
   //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
   
->>>>>>> BMP_Test
   wifiStatus(&tft, &AdaIO);
 }
 
