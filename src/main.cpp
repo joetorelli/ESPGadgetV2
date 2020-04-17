@@ -103,7 +103,7 @@ void setup()
     Serial.print(int(EEPROM.readInt(i)));
     Serial.print(" ");
   }
- /*************** set tft screen  *************/
+  /*************** set tft screen  *************/
   tft.init();                                         // initialize tft
   tft.setRotation(1);                                 // orientation
   tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
@@ -111,7 +111,7 @@ void setup()
   tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting IOT Gadget");                 // print text
- 
+
   /********* file system  **********/
   if (!SPIFFS.begin())
   {
@@ -124,11 +124,9 @@ void setup()
   drawBmp("/V4.bmp", 225, 190, &tft);
   //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
- 
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
   bool status; // connect status
-
 
   /**********  init i2c sensor  ************/
 
@@ -147,7 +145,6 @@ void setup()
     tft.println("Found BME280");
     Serial.println("Found BME280");
   }
-
 
   /*********  adafruit IO connect to wifi  ***********/
 
@@ -187,7 +184,7 @@ void setup()
   tft.fillScreen(BackGroundColor);
   drawBmp("/V4.bmp", 225, 190, &tft);
   //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
-  
+
   wifiStatus(&tft, &AdaIO);
 }
 

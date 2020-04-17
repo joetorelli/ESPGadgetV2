@@ -1,0 +1,5 @@
+{
+    "prettier.resolveGlobalModules": true,
+    "prettier.tabWidth": 3,
+    "prettier.useTabs": true
+}
