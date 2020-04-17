@@ -2,13 +2,14 @@
 #include "bmp_functions.h"
 
 
-void drawBmp(const char *filename, int16_t x, int16_t y, TFT_eSPI* tft) {
+void drawBmp(const char *filename, int16_t x, int16_t y, TFT_eSPI* tft) 
+{
 
   if ((x >= tft->width()) || (y >= tft->height())) return;
 
   fs::File bmpFS;
 
-  // Open requested file on SD card
+  // Open requested file on 
   bmpFS = SPIFFS.open(filename, "r");
 
   if (!bmpFS)
@@ -47,7 +48,8 @@ void drawBmp(const char *filename, int16_t x, int16_t y, TFT_eSPI* tft) {
       uint16_t padding = (4 - ((w * 3) & 3)) & 3;
       uint8_t lineBuffer[w * 3 + padding];
 
-      for (row = 0; row < h; row++) {
+      for (row = 0; row < h; row++) 
+      {
         
         bmpFS.read(lineBuffer, sizeof(lineBuffer));
         uint8_t*  bptr = lineBuffer;
@@ -65,6 +67,7 @@ void drawBmp(const char *filename, int16_t x, int16_t y, TFT_eSPI* tft) {
         // y is decremented as the BMP image is drawn bottom up
         tft->pushImage(x, y--, w, 1, (uint16_t*)lineBuffer);
       }
+
       DEBUGPRINT(" Loaded in "); DEBUGPRINT(millis() - startTime);
       DEBUGPRINTLN(" ms");
     }
@@ -77,14 +80,16 @@ void drawBmp(const char *filename, int16_t x, int16_t y, TFT_eSPI* tft) {
 // BMP data is stored little-endian, Arduino is little-endian too.
 // May need to reverse subscript order if porting elsewhere.
 
-uint16_t read16(fs::File &f) {
+uint16_t read16(fs::File &f) 
+{
   uint16_t result;
   ((uint8_t *)&result)[0] = f.read(); // LSB
   ((uint8_t *)&result)[1] = f.read(); // MSB
   return result;
 }
 
-uint32_t read32(fs::File &f) {
+uint32_t read32(fs::File &f) 
+{
   uint32_t result;
   ((uint8_t *)&result)[0] = f.read(); // LSB
   ((uint8_t *)&result)[1] = f.read();

@@ -15,7 +15,7 @@ void refresh_readings(Adafruit_BME280 *bme,
   uint16_t ForeGroundColor = TFT_WHITE;
 
 
-  //Serial.println(" DEFAULT BME Reading //********/");
+  //DEBUGPRINTln(" DEFAULT BME Reading //********/");
   float f_temperature = 0;
   float f_humidity = 0;
   float f_pressure = 0;
@@ -29,7 +29,7 @@ void refresh_readings(Adafruit_BME280 *bme,
   f_pressure = bme->readPressure() / 100.0F;
   f_altitude = bme->readAltitude(SEALEVELPRESSURE_HPA);
 
-  Serial.println("TFT = Right Now...");
+  DEBUGPRINTLN("TFT = Right Now...");
   //tft->setTextColor(ForeGroundColor, BackGroundColor);
   //tft->setRotation(1);
   tft->setCursor(5, 5);
@@ -46,8 +46,7 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Temperature
   //print to serial port
-  Serial.print(f_temperature);
-  Serial.println(" °C");
+  DEBUGPRINT(f_temperature);  DEBUGPRINTLN(" °C");
 
   tft->fillRect(5, 50, 140, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 50);
@@ -56,8 +55,7 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Humidity
   //print to serial port
-  Serial.print(f_humidity);
-  Serial.println(" %");
+  DEBUGPRINT(f_humidity);  DEBUGPRINTLN(" %");
 
   tft->fillRect(5, 90, 130, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 90);
@@ -66,8 +64,7 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Pressure
   //print to serial port
-  Serial.print(f_pressure);
-  Serial.println(" hPa");
+  DEBUGPRINT(f_pressure);  DEBUGPRINTLN(" hPa");
 
   tft->fillRect(5, 130, 130, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 130);
@@ -76,8 +73,7 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Appx altitude
   //print to serial port
-  Serial.print(f_altitude);
-  Serial.println(" m");
+  DEBUGPRINT(f_altitude);  DEBUGPRINTLN(" m");
 
   tft->fillRect(5, 170, 130, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 170);
@@ -92,7 +88,8 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   //update AdaIO count
   DisplayTheCount(tft);
+  
   digitalWrite(LED_PIN, LOW);
   //print to serial port
-  Serial.println("-----v2----");
+  DEBUGPRINTLN("-----v2----");
 }

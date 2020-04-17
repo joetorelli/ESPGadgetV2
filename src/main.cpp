@@ -3,7 +3,7 @@
  Project     :  ESP32U leashed
  Libraries   :  TFT_eSPI
  Author      :  VSCode 
- Description : course:  esp32 Unleashed by peter  section 8
+ Description : course:  esp32 Unleashed by peter  
  
  
  Version     : Pointers passing vars and objects
@@ -43,9 +43,6 @@ void clock_update();
 
 /**************************************   BME  ****************************/
 
-// used for calcs
-#define SEALEVEL_HPA (1013.25)
-
 //temp sensor object
 Adafruit_BME280 bme;
 
@@ -83,12 +80,12 @@ void setup()
   Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
 
-DEBUGPRINTLN("DEBUG Print Enabled");
+  DEBUGPRINTLN("DEBUG Print Enabled");
 
   //init eeprom
   if (!EEPROM.begin(EEPROM_SIZE))
   {
-    Serial.println("EEPROM INit Failed");
+    Serial.println("EEPROM INIT Failed");
     delay(10000);
   }
   /* 
@@ -114,12 +111,7 @@ DEBUGPRINTLN("DEBUG Print Enabled");
   tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting IOT Gadget");                 // print text
- // drawBmp("/V4.bmp", 225, 190, &tft);                 //show bitmap
  
-  //drawBmp("/te.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
-
-
-
   /********* file system  **********/
   if (!SPIFFS.begin())
   {
@@ -127,16 +119,15 @@ DEBUGPRINTLN("DEBUG Print Enabled");
     while (1)
       yield(); // Stay here twiddling thumbs waiting
   }
-drawBmp("/V4.bmp", 225, 190, &tft);
-//drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
-
+  // show bmp on display
+  drawBmp("/V4.bmp", 225, 190, &tft);
+  //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
  
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
   bool status; // connect status
-
 
 
   /**********  init i2c sensor  ************/
@@ -163,7 +154,7 @@ drawBmp("/V4.bmp", 225, 190, &tft);
   tft.println("Init WIFI");
   wifiStatusStart(&tft, &AdaIO);
   AdaIO.connect();
-  //wifiStatusStart(&tft, &AdaIO);
+  wifiStatusStart(&tft, &AdaIO);
   //wait for connection
   do
   {
@@ -174,6 +165,7 @@ drawBmp("/V4.bmp", 225, 190, &tft);
   //tft.setCursor(5, 50);
   tft.println("WIFI connected");
   delay(500);
+
   /******* set up clock ************/
   tft.print("Getting Time. Please Wait");
 

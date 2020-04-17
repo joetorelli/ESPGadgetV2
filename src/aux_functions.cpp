@@ -5,16 +5,13 @@
 int DisplayAdaIOCounter = 0;
 
 void wifiStatusStart(TFT_eSPI *tft, AdafruitIO_WiFi *AdaIO)
-{
-
-    
+{   
     tft->println(wl_status_to_string(WiFi.status()));
     //tft->print(AdaIO->networkStatus());
 }
 
 void wifiStatus(TFT_eSPI *tft, AdafruitIO_WiFi *AdaIO)
 {
-
     tft->loadFont("NotoSansBold15");
     tft->setTextColor(TFT_LIGHTGREY, TFT_BLACK);
     tft->fillRect(5, 220, 150, 20, TFT_BLACK);
@@ -60,29 +57,23 @@ const char *wl_status_to_string(wl_status_t status)
 
 void DisplayTheCount(TFT_eSPI *tft)
 {
-
-  
+    //read from EEPROM
     int TotalPosts = EEPROM.readInt(0);
-Serial.print("TotalPosts= ");
-Serial.println(TotalPosts);
+    DEBUGPRINT("TotalPosts= "); DEBUGPRINTLN(TotalPosts);
 
-   DisplayAdaIOCounter++; 
-Serial.print("DisplayAdaIOCounter= ");
-Serial.println(DisplayAdaIOCounter);
+    //inc current countercounter
+    DisplayAdaIOCounter++; 
+    DEBUGPRINT("DisplayAdaIOCounter= ");    DEBUGPRINTLN(DisplayAdaIOCounter);
 
+    // inc total count and write to EEPROM
+    TotalPosts++;       
+    EEPROM.writeInt(0,TotalPosts);
+    EEPROM.commit();
 
-    //if(DisplayAdaIOCounter > TotalPosts)
-    //{
-        TotalPosts++;       // = DisplayAdaIOCounter;  //   + TotalPosts;
-        EEPROM.writeInt(0,TotalPosts);
-        EEPROM.commit();
-    //}
-Serial.print("TotalPosts= ");
-Serial.println(TotalPosts);
-  Serial.print("EEPROM= ");
-  Serial.println(EEPROM.readInt(0));
+    DEBUGPRINT("TotalPosts= "); DEBUGPRINTLN(TotalPosts);
+    DEBUGPRINT("EEPROM= ");     DEBUGPRINTLN(EEPROM.readInt(0));
 
-
+    //display on tft
     tft->loadFont("NotoSansBold15");
     tft->setTextColor(TFT_LIGHTGREY, TFT_BLACK );
     tft->fillRect(220,0,90,20,TFT_BLACK);
@@ -90,6 +81,5 @@ Serial.println(TotalPosts);
     tft->print(DisplayAdaIOCounter);
     tft->print("/");
     tft->print(EEPROM.readInt(0));
-
 
 }
