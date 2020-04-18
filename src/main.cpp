@@ -88,16 +88,16 @@ void setup()
     Serial.println("EEPROM INIT Failed");
     delay(10000);
   }
-  /* 
+
   //test for bad alue (neg number)
   if (EEPROM.readInt(0) < 0)
   {
     //IF ned then clear
-    EEPROM.writeInt(0,5);
+    EEPROM.writeInt(0, 5);
     EEPROM.commit();
     Serial.println("Inside if ");
   }
-*/
+
   for (int i = 0; i < EEPROM_SIZE; i++)
   {
     Serial.print(int(EEPROM.readInt(i)));
