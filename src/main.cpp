@@ -100,7 +100,7 @@ void setup()
   //create interrupt, function to call,
   timerAttachInterrupt(WDTimer, &ResetGadget, true);
   // length of time out
-  timerAlarmWrite(WDTimer, WDTimeout * 1000, false);
+  timerAlarmWrite(WDTimer, WDTimeout * 20000, false);
   // enable interrupt
   timerAlarmEnable(WDTimer);
 
@@ -216,8 +216,6 @@ void loop()
 
   // WDT reset
   timerWrite(WDTimer, 0);
-  // test WDT with long delay
-  delay(15000);
 
   /***********  run tasks  **************/
   runner.execute();
