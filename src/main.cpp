@@ -41,13 +41,25 @@ void clock_update();
 
 /********************* Objects and vars  *******************/
 
-/**************************************   BME  ****************************/
+/************************   BME  ***************************/
 
 //temp sensor object
 Adafruit_BME280 bme;
 
 // BME280_ADDRESS = 0x77
 // BME280_ADDRESS_ALTERNATE = 0x76
+
+/********************  WDT   ******************************/
+hw_timer_t *WDTimer = NULL;
+const int WDTimeout = 10000;
+
+// WDT timeout function
+void IRAM_ATTR ResetGadget()
+{
+  ets_printf("Rebooting...\n");
+  DEBUGPRINTLN("WDTimer Timeout");
+  esp_restart();
+}
 
 /*********************  TFT Display  *********************/
 TFT_eSPI tft = TFT_eSPI(); // create object (tft), of type (TFT_eSPI), from class (TFT_eSPI())
@@ -82,27 +94,32 @@ void setup()
 
   DEBUGPRINTLN("DEBUG Print Enabled");
 
+  // WDT setup, cause system reboot
+  //use timer 0 ,divide clock by 80, count up
+  WDTimer = timerBegin(0, 80, true);
+  //create interrupt, function to call,
+  timerAttachInterrupt(WDTimer, &ResetGadget, true);
+  // length of time out
+  timerAlarmWrite(WDTimer, WDTimeout * 1000, false);
+  // enable interrupt
+  timerAlarmEnable(WDTimer);
+
   //init eeprom
   if (!EEPROM.begin(EEPROM_SIZE))
   {
-    Serial.println("EEPROM INIT Failed");
+    DEBUGPRINTLN("EEPROM INIT Failed");
     delay(10000);
   }
 
   //test for bad alue (neg number)
   if (EEPROM.readInt(0) < 0)
   {
-    //IF ned then clear
-    EEPROM.writeInt(0, 5);
+    //IF neg then clear
+    EEPROM.writeInt(0, 0);
     EEPROM.commit();
-    Serial.println("Inside if ");
+    //Serial.println("Inside if ");
   }
 
-  for (int i = 0; i < EEPROM_SIZE; i++)
-  {
-    Serial.print(int(EEPROM.readInt(i)));
-    Serial.print(" ");
-  }
   /*************** set tft screen  *************/
   tft.init();                                         // initialize tft
   tft.setRotation(1);                                 // orientation
@@ -137,14 +154,17 @@ void setup()
   if (!status) // test status
   {
     tft.println("Can't find BME280");
-    Serial.println("Can't find BME280, it may have fell on the floor");
+    DEBUGPRINTLN("Can't find BME280, it may have fell on the floor");
     //while (1);
   }
   else
   {
     tft.println("Found BME280");
-    Serial.println("Found BME280");
+    DEBUGPRINTLN("Found BME280");
   }
+
+  // WDT reset
+  timerWrite(WDTimer, 0);
 
   /*********  adafruit IO connect to wifi  ***********/
 
@@ -161,7 +181,9 @@ void setup()
 
   //tft.setCursor(5, 50);
   tft.println("WIFI connected");
-  delay(500);
+
+  // WDT reset
+  timerWrite(WDTimer, 0);
 
   /******* set up clock ************/
   tft.print("Getting Time. Please Wait");
@@ -192,31 +214,13 @@ void setup()
 void loop()
 {
 
+  // WDT reset
+  timerWrite(WDTimer, 0);
+  // test WDT with long delay
+  delay(15000);
+
   /***********  run tasks  **************/
   runner.execute();
-  /*
-int val = int(random(10020));
-  EEPROM.writeInt(addr, val);
-  delay(100);
-  Serial.print(val); Serial.print(" ");
- addr = addr + 1;
-  if (addr == EEPROM_SIZE)
-  {
-    Serial.println();
-    addr = 0;
-    EEPROM.commit();
-    Serial.print(EEPROM_SIZE);
-    Serial.println(" bytes written on Flash . Values are:");
-    for (int i = 0; i < EEPROM_SIZE; i++)
-    {
-      Serial.print(int(EEPROM.readInt(i))); Serial.print(" ");
-      delay(100);
-    }
-    Serial.println(); Serial.println("----------------------------------");
-  }
-
-  delay(500);  
-*/
 }
 
 /**********************************************
