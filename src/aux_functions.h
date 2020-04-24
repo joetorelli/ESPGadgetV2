@@ -8,3 +8,7 @@ const char *wl_status_to_string(wl_status_t status);
 
 //display the count when AdaIO updated
 void DisplayTheCount(TFT_eSPI *tft);
+
+void readTouch(TFT_eSPI *tft);
+
+void calibrate_touch_screen(TFT_eSPI *tft);

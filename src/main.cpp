@@ -91,6 +91,7 @@ void setup()
   //serial port
   Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
+  pinMode(IFTTT_PIN, OUTPUT);
 
   DEBUGPRINTLN("DEBUG Print Enabled");
 
@@ -121,7 +122,13 @@ void setup()
   }
 
   /*************** set tft screen  *************/
-  tft.init();                                         // initialize tft
+  tft.init(); // initialize tft
+              // Calibrate the touch interface
+  // This only needs to be done once
+  // The calibration data will be stored in the SPIFS
+  // It is important to calibrate the touch interface after the display is rotated
+  calibrate_touch_screen(&tft);
+
   tft.setRotation(1);                                 // orientation
   tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
   tft.fillScreen(BackGroundColor);                    // clear screen with background color
@@ -219,6 +226,7 @@ void loop()
 
   /***********  run tasks  **************/
   runner.execute();
+  readTouch(&tft);
 }
 
 /**********************************************

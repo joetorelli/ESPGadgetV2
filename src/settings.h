@@ -12,8 +12,9 @@
 #include "esp_system.h"
 
 #define LED_PIN 17
-#define IFTTT 16
+#define IFTTT_PIN 16
 #define EEPROM_SIZE 4
+#define CALIBRATION_FILE "/TFT_Touch_CalData" //touch cal data in SPIFF
 #endif
 
 #define DEBUGLOG
