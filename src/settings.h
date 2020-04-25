@@ -10,9 +10,11 @@
 #include "clock.h" //clock settings
 #include "EEPROM.h"
 #include "esp_system.h"
+#include "mqttController.h"
 
-#define LED_PIN 17
-#define IFTTT_PIN 16
+#define UpdateLED 17
+#define TouchLED 16
+#define IFTTTLED 12
 #define EEPROM_SIZE 4
 #define CALIBRATION_FILE "/TFT_Touch_CalData" //touch cal data in SPIFF
 #endif

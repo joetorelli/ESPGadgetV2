@@ -48,7 +48,7 @@ Adafruit_BME280 bme;
 
 // BME280_ADDRESS = 0x77
 // BME280_ADDRESS_ALTERNATE = 0x76
-
+boolean IFTTT_Flag = LOW;
 /********************  WDT   ******************************/
 hw_timer_t *WDTimer = NULL;
 const int WDTimeout = 10000;
@@ -81,7 +81,7 @@ AdafruitIO_Feed *Temperature = AdaIO.feed("iogadget.temperature");
 AdafruitIO_Feed *Humidity = AdaIO.feed("iogadget.humidity");
 AdafruitIO_Feed *Pressure = AdaIO.feed("iogadget.pressure");
 AdafruitIO_Feed *Altitude = AdaIO.feed("iogadget.altitude");
-
+AdafruitIO_Feed *LEDControl = AdaIO.feed("iogadget.led");
 /*************************  Setup   ******************************/
 
 int addr = 0;
@@ -90,8 +90,9 @@ void setup()
 
   //serial port
   Serial.begin(115200);
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(IFTTT_PIN, OUTPUT);
+  pinMode(UpdateLED, OUTPUT); //AdaIOUpdate Task Indicator
+  pinMode(TouchLED, OUTPUT);  //GLCD Touch Indicator
+  pinMode(IFTTTLED, OUTPUT);  // IFTTT indicator
 
   DEBUGPRINTLN("DEBUG Print Enabled");
 
@@ -110,6 +111,10 @@ void setup()
   {
     DEBUGPRINTLN("EEPROM INIT Failed");
     delay(10000);
+  }
+  else
+  {
+    DEBUGPRINTLN("EEPROM INIT OK");
   }
 
   //test for bad alue (neg number)
@@ -135,13 +140,17 @@ void setup()
   tft.setCursor(0, 0);                                // position cursor to top left
   tft.println("Hello");                               // print text
   tft.println("Starting IOT Gadget");                 // print text
-
+  DEBUGPRINTLN("TFT INIT OK");
   /********* file system  **********/
   if (!SPIFFS.begin())
   {
     tft.println("SPIFFS initialisation failed!");
     while (1)
       yield(); // Stay here twiddling thumbs waiting
+  }
+  else
+  {
+    DEBUGPRINTLN("SPIFFS INIT OK");
   }
 
   // show bmp on display
@@ -151,7 +160,7 @@ void setup()
   /*********   init i2c  *********/
   Wire.begin(I2c_SDA, I2c_SCL);
   bool status; // connect status
-
+  DEBUGPRINTLN("I2C INIT OK");
   /**********  init i2c sensor  ************/
 
   tft.println("Init Sensor");
@@ -172,12 +181,15 @@ void setup()
 
   // WDT reset
   timerWrite(WDTimer, 0);
-
+  DEBUGPRINTLN("WDT INIT OK");
   /*********  adafruit IO connect to wifi  ***********/
 
   tft.println("Init WIFI");
+  DEBUGPRINTLN("Start WiFi INIT");
   wifiStatusStart(&tft, &AdaIO);
+  DEBUG_PRINTLN("AdaIO Connect");
   AdaIO.connect();
+
   wifiStatusStart(&tft, &AdaIO);
   //wait for connection
   do
@@ -185,6 +197,11 @@ void setup()
     tft.print(".");
     delay(500);
   } while (AdaIO.status() < AIO_CONNECTED);
+
+  //callback for MQTT
+  //whena msg is received from Adafruit
+  DEBUG_PRINTLN("MQTT Controller...");
+  LEDControl->onMessage(LEDMessage);
 
   //tft.setCursor(5, 50);
   tft.println("WIFI connected");
@@ -226,6 +243,8 @@ void loop()
 
   /***********  run tasks  **************/
   runner.execute();
+  //connect to AdaIOfor MQTT
+  AdaIO.run();
   readTouch(&tft);
 }
 
@@ -244,6 +263,7 @@ void refresh_readings_update()
                    Humidity,
                    Pressure,
                    Altitude);
+  //LEDControl);
 
   wifiStatus(&tft, &AdaIO);
 }

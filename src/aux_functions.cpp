@@ -167,12 +167,12 @@ void readTouch(TFT_eSPI *tft)
             //if you touch position numbers turn on led
             if ((x > 220 && x < 280) && (y > 140 && y < 190))
             {
-                digitalWrite(IFTTT_PIN, HIGH);
+                digitalWrite(TouchLED, HIGH);
             }
             // if you touch logo clear coor and led
             else if ((x > 225 && x < 320) && (y > 200 && 240))
             {
-                digitalWrite(IFTTT_PIN, LOW);
+                digitalWrite(TouchLED, LOW);
                 tft->fillRect(220, 150, 70, 40, TFT_BLACK);
             }
         }

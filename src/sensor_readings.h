@@ -14,8 +14,8 @@ void refresh_readings(Adafruit_BME280 *bme,
                       AdafruitIO_Feed *Temp,
                       AdafruitIO_Feed *Hum,
                       AdafruitIO_Feed *Pres,
-                    AdafruitIO_Feed *Alt);
-
+                      AdafruitIO_Feed *Alt);
+//AdafruitIO_Fee *LEDControl);
 
 //void refresh_readings(Adafruit_BME280 *bme);
 //void refresh_readings(Adafruit_BME280 *bme, TFT_eSPI *tft);

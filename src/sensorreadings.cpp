@@ -1,6 +1,7 @@
 
 #include <Arduino.h>
 #include "sensor_readings.h"
+#include "mqttController.h"
 
 //void refresh_readings(Adafruit_BME280 *bme, TFT_eSPI *tft)
 void refresh_readings(Adafruit_BME280 *bme,
@@ -9,11 +10,12 @@ void refresh_readings(Adafruit_BME280 *bme,
                       AdafruitIO_Feed *Hum,
                       AdafruitIO_Feed *Pres,
                       AdafruitIO_Feed *Alt)
+//AdafruitIO_Feed *LEDControl)
+
 {
 
   uint16_t BackGroundColor = TFT_BLACK;
   uint16_t ForeGroundColor = TFT_WHITE;
-
 
   //DEBUGPRINTln(" DEFAULT BME Reading //********/");
   float f_temperature = 0;
@@ -21,7 +23,7 @@ void refresh_readings(Adafruit_BME280 *bme,
   float f_pressure = 0;
   float f_altitude = 0;
 
-  digitalWrite(LED_PIN, HIGH);
+  digitalWrite(UpdateLED, HIGH);
 
   //read sensor ad load vars
   f_temperature = bme->readTemperature();
@@ -46,7 +48,8 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Temperature
   //print to serial port
-  DEBUGPRINT(f_temperature);  DEBUGPRINTLN(" °C");
+  DEBUGPRINT(f_temperature);
+  DEBUGPRINTLN(" °C");
 
   tft->fillRect(5, 50, 140, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 50);
@@ -55,7 +58,8 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Humidity
   //print to serial port
-  DEBUGPRINT(f_humidity);  DEBUGPRINTLN(" %");
+  DEBUGPRINT(f_humidity);
+  DEBUGPRINTLN(" %");
 
   tft->fillRect(5, 90, 130, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 90);
@@ -64,7 +68,8 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Pressure
   //print to serial port
-  DEBUGPRINT(f_pressure);  DEBUGPRINTLN(" hPa");
+  DEBUGPRINT(f_pressure);
+  DEBUGPRINTLN(" hPa");
 
   tft->fillRect(5, 130, 130, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 130);
@@ -73,7 +78,8 @@ void refresh_readings(Adafruit_BME280 *bme,
 
   // Appx altitude
   //print to serial port
-  DEBUGPRINT(f_altitude);  DEBUGPRINTLN(" m");
+  DEBUGPRINT(f_altitude);
+  DEBUGPRINTLN(" m");
 
   tft->fillRect(5, 170, 130, 30, BackGroundColor); //clear out old text
   tft->setCursor(5, 170);
@@ -83,13 +89,14 @@ void refresh_readings(Adafruit_BME280 *bme,
   /******  Send Data to AdaIO   ******/
   Temp->save(f_temperature);
   Hum->save(f_humidity);
+  //LEDControl->save(IFTTT_Flag);
   //Pres->save(f_pressure);
   //Alt->save(f_altitude);
 
   //update AdaIO count
   DisplayTheCount(tft);
-  
-  digitalWrite(LED_PIN, LOW);
+
+  digitalWrite(UpdateLED, LOW);
   //print to serial port
   DEBUGPRINTLN("-----v2----");
 }
