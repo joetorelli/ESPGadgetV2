@@ -232,6 +232,47 @@ void setup()
   //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
 
   wifiStatus(&tft, &AdaIO);
+
+  /*********************  SD Card  *************************/
+  SD.begin(SD_CS);
+  if (!SD.begin(SD_CS))
+  {
+    Serial.println("SD Card failed");
+    return;
+  }
+
+  uint8_t CardType = SD.cardType();
+
+  if (CardType == CARD_NONE)
+  {
+    Serial.println("No SD Card Found");
+    return;
+  }
+
+  Serial.print("SD Card Type: ");
+
+  if (CardType == CARD_MMC)
+  {
+    Serial.println("MMC");
+  }
+  else if (CardType == CARD_SD)
+  {
+    Serial.println("SCSC");
+  }
+  else if (CardType == CARD_SDHC)
+  {
+    Serial.println("SDHC");
+  }
+  else
+  {
+    Serial.println("Unkown Type");
+  }
+
+  uint64_t CardSize = SD.cardSize() / (1024 * 1024);
+  Serial.printf("SD Card Size: %lluMB\n", CardSize);
+  Serial.printf("Total Space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
+  Serial.printf("Used Space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
+  listDir(SD, "/", 0);
 }
 
 /**************************  loop  *******************/

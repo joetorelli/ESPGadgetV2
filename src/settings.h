@@ -11,7 +11,9 @@
 #include "EEPROM.h"
 #include "esp_system.h"
 #include "mqttController.h"
+#include "SD_Card.h"
 
+#define SD_CS 4
 #define UpdateLED 17
 #define TouchLED 16
 #define IFTTTLED 12
