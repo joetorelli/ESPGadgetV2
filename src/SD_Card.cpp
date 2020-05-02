@@ -152,7 +152,46 @@ void deleteFile(fs::FS &fs, const char *path)
     }
 }
 
+void Refresh_SD(Timezone *timezone)
+{
 
+    String TimeStr;
+    TimeStr = timezone->dateTime("H:i:s");
+    Serial.print("TimeStr= ");
+    Serial.println(TimeStr);
+    File myFile;
+    myFile = SD.open("/Hello.txt", FILE_APPEND);
+    if (myFile)
+    {
+        Serial.println("Writing Time");
+        myFile.println(TimeStr);
+        //myFile.close();
+        Serial.println("Closed File");
+    }
+    else
+    {
+        Serial.println("File Error");
+    }
+    // re-open the file for reading:
+    myFile = SD.open("/Hello.txt");
+    if (myFile)
+    {
+        Serial.println("Read File");
+
+        // read from the file until there's nothing else in it:
+        while (myFile.available())
+        {
+            Serial.write(myFile.read());
+        }
+        // close the file:
+        myFile.close();
+    }
+    else
+    {
+        // if the file didn't open, print an error:
+        Serial.println("error opening");
+    }
+}
 
 /* examples
 listDir(SD, "/", 0);

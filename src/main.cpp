@@ -21,6 +21,7 @@ Includes
 #include "bmp_functions.h"
 #include <TaskScheduler.h>
 #include "network_config.h"
+#include "clock.h"
 
 /**********************************************
   Sub/Function Declarations
@@ -30,7 +31,7 @@ Includes
 //update TFT
 void refresh_readings_update();
 void clock_update();
-
+void SD_Update();
 /**********************************************
   Pin Definitions
 **********************************************/
@@ -69,6 +70,7 @@ uint16_t ForeGroundColor = TFT_WHITE;
 /***************  task scheduler  **************************/
 Task t1_AdaIOUpdate(10000, TASK_FOREVER, &refresh_readings_update); //can not pass vars with pointer in this function
 Task t2_clock(1000, TASK_FOREVER, &clock_update);
+//Task t3_SDCard(15000, TASK_FOREVER, &SD_Update);
 //Task t5_indicators(2000, TASK_FOREVER, &indicators);
 Scheduler runner;
 
@@ -223,8 +225,10 @@ void setup()
   runner.init();
   runner.addTask(t1_AdaIOUpdate);
   runner.addTask(t2_clock);
+  //runner.addTask(t3_SDCard);
   t1_AdaIOUpdate.enable();
   t2_clock.enable();
+  //t3_SDCard.enable();
 
   //clear tft and load bmp
   tft.fillScreen(BackGroundColor);
@@ -267,7 +271,7 @@ void setup()
   {
     Serial.println("Unkown Type");
   }
-
+  String Tempp;
   uint64_t CardSize = SD.cardSize() / (1024 * 1024);
   Serial.printf("SD Card Size: %lluMB\n", CardSize);
   Serial.printf("Total Space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
@@ -314,4 +318,10 @@ void clock_update()
 {
 
   refresh_clock(&tft, &CST_TimeZone);
+}
+
+void SD_Update()
+{
+
+  Refresh_SD(&CST_TimeZone);
 }
