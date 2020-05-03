@@ -152,31 +152,43 @@ void deleteFile(fs::FS &fs, const char *path)
     }
 }
 
-void Refresh_SD(Timezone *timezone)
+void Refresh_SD(Timezone *timezone, Adafruit_BME280 *bme)
 {
+    float ftemperature = 0;
+    float fhumidity = 0;
+    //float fpressure = 0;
+    //float faltitude = 0;
+
+    //read sensor ad load vars
+    ftemperature = bme->readTemperature();
+    fhumidity = bme->readHumidity();
+    //fpressure = bme->readPressure() / 100.0F;
+    //faltitude = bme->readAltitude(SEALEVELPRESSURE_HPA);
 
     String TimeStr;
-    TimeStr = timezone->dateTime("H:i:s");
-    Serial.print("TimeStr= ");
-    Serial.println(TimeStr);
+    TimeStr = timezone->dateTime("Y m d H:i:s ");
+    TimeStr = TimeStr + " T: " + ftemperature + " H: " + fhumidity;
+    DEBUG_PRINT("TimeStr= ");
+    DEBUG_PRINTLN(TimeStr);
+
     File myFile;
-    myFile = SD.open("/Hello.txt", FILE_APPEND);
+    myFile = SD.open("/datalog.txt", FILE_APPEND);
     if (myFile)
     {
-        Serial.println("Writing Time");
+        DEBUG_PRINTLN("Writing Time");
         myFile.println(TimeStr);
-        //myFile.close();
-        Serial.println("Closed File");
+        myFile.close();
+        DEBUG_PRINTLN("Closed File");
     }
     else
     {
         Serial.println("File Error");
     }
     // re-open the file for reading:
-    myFile = SD.open("/Hello.txt");
+    myFile = SD.open("/datalog.txt");
     if (myFile)
     {
-        Serial.println("Read File");
+        DEBUG_PRINTLN("Read File");
 
         // read from the file until there's nothing else in it:
         while (myFile.available())
