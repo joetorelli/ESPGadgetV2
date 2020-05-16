@@ -22,7 +22,9 @@ Includes
 #include <TaskScheduler.h>
 #include "network_config.h"
 #include "clock.h"
-
+#include <Wire.h>
+#include <RtcDS3231.h>
+//#include "RTClib.h"
 /**********************************************
   Sub/Function Declarations
 **********************************************/
@@ -59,9 +61,9 @@ const int WDTimeout = 10000;
 // WDT timeout function
 void IRAM_ATTR ResetGadget()
 {
-  ets_printf("Rebooting...\n");
-  DEBUGPRINTLN("WDTimer Timeout");
-  esp_restart();
+   ets_printf("Rebooting...\n");
+   DEBUGPRINTLN("WDTimer Timeout");
+   esp_restart();
 }
 
 /*********************  TFT Display  *********************/
@@ -93,207 +95,213 @@ int addr = 0;
 void setup()
 {
 
-  //serial port
-  Serial.begin(115200);
-  pinMode(UpdateLED, OUTPUT); //AdaIOUpdate Task Indicator
-  pinMode(TouchLED, OUTPUT);  //GLCD Touch Indicator
-  pinMode(IFTTTLED, OUTPUT);  // IFTTT indicator
+   //serial port
+   Serial.begin(115200);
+   pinMode(UpdateLED, OUTPUT); //AdaIOUpdate Task Indicator
+   pinMode(TouchLED, OUTPUT);  //GLCD Touch Indicator
+   pinMode(IFTTTLED, OUTPUT);  // IFTTT indicator
 
-  DEBUGPRINTLN("DEBUG Print Enabled");
+   DEBUGPRINTLN("DEBUG Print Enabled");
 
-  // WDT setup, cause system reboot
-  //use timer 0 ,divide clock by 80, count up
-  WDTimer = timerBegin(0, 80, true);
-  //create interrupt, function to call,
-  timerAttachInterrupt(WDTimer, &ResetGadget, true);
-  // length of time out
-  timerAlarmWrite(WDTimer, WDTimeout * 20000, false);
-  // enable interrupt
-  timerAlarmEnable(WDTimer);
+   // WDT setup, cause system reboot
+   //use timer 0 ,divide clock by 80, count up
+   WDTimer = timerBegin(0, 80, true);
+   //create interrupt, function to call,
+   timerAttachInterrupt(WDTimer, &ResetGadget, true);
+   // length of time out
+   timerAlarmWrite(WDTimer, WDTimeout * 20000, false);
+   // enable interrupt
+   timerAlarmEnable(WDTimer);
 
-  //init eeprom
-  if (!EEPROM.begin(EEPROM_SIZE))
-  {
-    DEBUGPRINTLN("EEPROM INIT Failed");
-    delay(10000);
-  }
-  else
-  {
-    DEBUGPRINTLN("EEPROM INIT OK");
-  }
+   //init eeprom
+   if (!EEPROM.begin(EEPROM_SIZE))
+   {
+      DEBUGPRINTLN("EEPROM INIT Failed");
+      delay(10000);
+   }
+   else
+   {
+      DEBUGPRINTLN("EEPROM INIT OK");
+   }
 
-  //test for bad alue (neg number)
-  if (EEPROM.readInt(0) < 0)
-  {
-    //IF neg then clear
-    EEPROM.writeInt(0, 0);
-    EEPROM.commit();
-    //Serial.println("Inside if ");
-  }
+   //test for bad alue (neg number)
+   if (EEPROM.readInt(0) < 0)
+   {
+      //IF neg then clear
+      EEPROM.writeInt(0, 0);
+      EEPROM.commit();
+      //Serial.println("Inside if ");
+   }
 
-  /*************** set tft screen  *************/
-  tft.init(); // initialize tft
-              // Calibrate the touch interface
-  // This only needs to be done once
-  // The calibration data will be stored in the SPIFS
-  // It is important to calibrate the touch interface after the display is rotated
-  calibrate_touch_screen(&tft);
+   /*************** set tft screen  *************/
+   tft.init(); // initialize tft
+               // Calibrate the touch interface
+   // This only needs to be done once
+   // The calibration data will be stored in the SPIFS
+   // It is important to calibrate the touch interface after the display is rotated
+   calibrate_touch_screen(&tft);
 
-  tft.setRotation(1);                                 // orientation
-  tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
-  tft.fillScreen(BackGroundColor);                    // clear screen with background color
-  tft.setCursor(0, 0);                                // position cursor to top left
-  tft.println("Hello");                               // print text
-  tft.println("Starting IOT Gadget");                 // print text
-  DEBUGPRINTLN("TFT INIT OK");
-  /********* file system  **********/
-  if (!SPIFFS.begin())
-  {
-    tft.println("SPIFFS initialisation failed!");
-    while (1)
-      yield(); // Stay here twiddling thumbs waiting
-  }
-  else
-  {
-    DEBUGPRINTLN("SPIFFS INIT OK");
-  }
+   tft.setRotation(1);                                 // orientation
+   tft.setTextColor(ForeGroundColor, BackGroundColor); // set text to foreground and background color
+   tft.fillScreen(BackGroundColor);                    // clear screen with background color
+   tft.setCursor(0, 0);                                // position cursor to top left
+   tft.println("Hello");                               // print text
+   tft.println("Starting IOT Gadget");                 // print text
+   DEBUGPRINTLN("TFT INIT OK");
+   /********* file system  **********/
+   if (!SPIFFS.begin())
+   {
+      tft.println("SPIFFS initialisation failed!");
+      while (1)
+         yield(); // Stay here twiddling thumbs waiting
+   }
+   else
+   {
+      DEBUGPRINTLN("SPIFFS INIT OK");
+   }
 
-  // show bmp on display
-  drawBmp("/V4.bmp", 225, 190, &tft);
-  //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
+   // show bmp on display
+   drawBmp("/V4.bmp", 225, 190, &tft);
+   //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);             //show bitmap
 
-  /*********   init i2c  *********/
-  Wire.begin(I2c_SDA, I2c_SCL);
-  bool status; // connect status
-  DEBUGPRINTLN("I2C INIT OK");
-  /**********  init i2c sensor  ************/
+   /*********   init i2c  *********/
+   Wire.begin(I2c_SDA, I2c_SCL);
+   bool status; // connect status
+   DEBUGPRINTLN("I2C INIT OK");
 
-  tft.println("Init Sensor");
+   /**********  init i2c sensor  ************/
 
-  status = bme.begin(BME280_ADDRESS_ALTERNATE); // get status of tft
+   tft.println("Init Sensor");
 
-  if (!status) // test status
-  {
-    tft.println("Can't find BME280");
-    DEBUGPRINTLN("Can't find BME280, it may have fell on the floor");
-    //while (1);
-  }
-  else
-  {
-    tft.println("Found BME280");
-    DEBUGPRINTLN("Found BME280");
-  }
+   status = bme.begin(BME280_ADDRESS_ALTERNATE); // get status of tft
 
-  // WDT reset
-  timerWrite(WDTimer, 0);
-  DEBUGPRINTLN("WDT INIT OK");
-  /*********  adafruit IO connect to wifi  ***********/
+   if (!status) // test status
+   {
+      tft.println("Can't find BME280");
+      DEBUGPRINTLN("Can't find BME280, it may have fell on the floor");
+      //while (1);
+   }
+   else
+   {
+      tft.println("Found BME280");
+      DEBUGPRINTLN("Found BME280");
+   }
+   /**********************  init rtc  **************************/
 
-  tft.println("Init WIFI");
-  DEBUGPRINTLN("Start WiFi INIT");
-  wifiStatusStart(&tft, &AdaIO);
-  DEBUG_PRINTLN("AdaIO Connect");
-  AdaIO.connect();
+   RtcDS3231<TwoWire> Rtc(Wire);
+   Rtc.Begin();
 
-  wifiStatusStart(&tft, &AdaIO);
-  //wait for connection
-  do
-  {
-    tft.print(".");
-    delay(500);
-  } while (AdaIO.status() < AIO_CONNECTED);
+   // WDT reset
+   timerWrite(WDTimer, 0);
+   DEBUGPRINTLN("WDT INIT OK");
 
-  //callback for MQTT
-  //whena msg is received from Adafruit
-  DEBUG_PRINTLN("MQTT Controller...");
-  LEDControl->onMessage(LEDMessage);
+   /*********  adafruit IO connect to wifi  ***********/
 
-  //tft.setCursor(5, 50);
-  tft.println("WIFI connected");
+   tft.println("Init WIFI");
+   DEBUGPRINTLN("Start WiFi INIT");
+   wifiStatusStart(&tft, &AdaIO);
+   DEBUG_PRINTLN("AdaIO Connect");
+   AdaIO.connect();
 
-  // WDT reset
-  timerWrite(WDTimer, 0);
+   wifiStatusStart(&tft, &AdaIO);
+   //wait for connection
+   do
+   {
+      tft.print(".");
+      delay(500);
+   } while (AdaIO.status() < AIO_CONNECTED);
 
-  /******* set up clock ************/
-  tft.print("Getting Time. Please Wait");
+   //callback for MQTT
+   //whena msg is received from Adafruit
+   DEBUG_PRINTLN("MQTT Controller...");
+   LEDControl->onMessage(LEDMessage);
 
-  do
-  {
-    tft.print(".");
-  } while (!waitForSync(1));
+   //tft.setCursor(5, 50);
+   tft.println("WIFI connected");
 
-  CST_TimeZone.setLocation("America/Chicago");
+   // WDT reset
+   timerWrite(WDTimer, 0);
 
-  /************* set up task runner  *************/
-  runner.init();
-  runner.addTask(t1_AdaIOUpdate);
-  runner.addTask(t2_clock);
-  runner.addTask(t3_SDCard);
-  t1_AdaIOUpdate.enable();
-  t2_clock.enable();
-  t3_SDCard.enable();
+   /******* set up clock ************/
+   tft.print("Getting Time. Please Wait");
 
-  //clear tft and load bmp
-  tft.fillScreen(BackGroundColor);
-  drawBmp("/V4.bmp", 225, 190, &tft);
-  //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
+   do
+   {
+      tft.print(".");
+   } while (!waitForSync(1));
 
-  wifiStatus(&tft, &AdaIO);
+   CST_TimeZone.setLocation("America/Chicago");
 
-  /*********************  SD Card  *************************/
-  SD.begin(SD_CS);
-  if (!SD.begin(SD_CS))
-  {
-    Serial.println("SD Card failed");
-    return;
-  }
+   /************* set up task runner  *************/
+   runner.init();
+   runner.addTask(t1_AdaIOUpdate);
+   runner.addTask(t2_clock);
+   runner.addTask(t3_SDCard);
+   t1_AdaIOUpdate.enable();
+   t2_clock.enable();
+   t3_SDCard.enable();
 
-  uint8_t CardType = SD.cardType();
+   //clear tft and load bmp
+   tft.fillScreen(BackGroundColor);
+   drawBmp("/V4.bmp", 225, 190, &tft);
+   //drawBmp("/te2.bmp", 150, 160, &tft);   //150, 160, &tft);
 
-  if (CardType == CARD_NONE)
-  {
-    Serial.println("No SD Card Found");
-    return;
-  }
+   wifiStatus(&tft, &AdaIO);
 
-  Serial.print("SD Card Type: ");
+   /*********************  SD Card  *************************/
+   SD.begin(SD_CS);
+   if (!SD.begin(SD_CS))
+   {
+      Serial.println("SD Card failed");
+      return;
+   }
 
-  if (CardType == CARD_MMC)
-  {
-    Serial.println("MMC");
-  }
-  else if (CardType == CARD_SD)
-  {
-    Serial.println("SCSC");
-  }
-  else if (CardType == CARD_SDHC)
-  {
-    Serial.println("SDHC");
-  }
-  else
-  {
-    Serial.println("Unkown Type");
-  }
-  String Tempp;
-  uint64_t CardSize = SD.cardSize() / (1024 * 1024);
-  Serial.printf("SD Card Size: %lluMB\n", CardSize);
-  Serial.printf("Total Space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
-  Serial.printf("Used Space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
-  listDir(SD, "/", 0);
+   uint8_t CardType = SD.cardType();
+
+   if (CardType == CARD_NONE)
+   {
+      Serial.println("No SD Card Found");
+      return;
+   }
+
+   Serial.print("SD Card Type: ");
+
+   if (CardType == CARD_MMC)
+   {
+      Serial.println("MMC");
+   }
+   else if (CardType == CARD_SD)
+   {
+      Serial.println("SCSC");
+   }
+   else if (CardType == CARD_SDHC)
+   {
+      Serial.println("SDHC");
+   }
+   else
+   {
+      Serial.println("Unkown Type");
+   }
+   String Tempp;
+   uint64_t CardSize = SD.cardSize() / (1024 * 1024);
+   Serial.printf("SD Card Size: %lluMB\n", CardSize);
+   Serial.printf("Total Space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
+   Serial.printf("Used Space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
+   listDir(SD, "/", 0);
 }
 
 /**************************  loop  *******************/
 void loop()
 {
 
-  // WDT reset
-  timerWrite(WDTimer, 0);
+   // WDT reset
+   timerWrite(WDTimer, 0);
 
-  /***********  run tasks  **************/
-  runner.execute();
-  //connect to AdaIOfor MQTT
-  AdaIO.run();
-  readTouch(&tft);
+   /***********  run tasks  **************/
+   runner.execute();
+   //connect to AdaIOfor MQTT
+   AdaIO.run();
+   readTouch(&tft);
 }
 
 /**********************************************
@@ -305,26 +313,26 @@ void loop()
 //update temp to screen
 void refresh_readings_update()
 {
-  refresh_readings(&bme,
-                   &tft,
-                   Temperature,
-                   Humidity,
-                   Pressure,
-                   Altitude);
-  //LEDControl);
+   refresh_readings(&bme,
+                    &tft,
+                    Temperature,
+                    Humidity,
+                    Pressure,
+                    Altitude);
+   //LEDControl);
 
-  wifiStatus(&tft, &AdaIO);
+   wifiStatus(&tft, &AdaIO);
 }
 
 // update clock to screen
 void clock_update()
 {
 
-  refresh_clock(&tft, &CST_TimeZone);
+   refresh_clock(&tft, &CST_TimeZone);
 }
 
 void SD_Update()
 {
-  
-  Refresh_SD(&CST_TimeZone, &bme);
+
+   Refresh_SD(&CST_TimeZone, &bme);
 }
