@@ -148,6 +148,7 @@ void setup()
    tft.println("Hello");                               // print text
    tft.println("Starting IOT Gadget");                 // print text
    DEBUGPRINTLN("TFT INIT OK");
+
    /********* file system  **********/
    if (!SPIFFS.begin())
    {
