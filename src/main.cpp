@@ -36,7 +36,8 @@
 #define TFT_CS 15 // Chip select control pin
 #define TFT_DC 0  // Data Command control pin
 #define TFT_RST 2 // Reset pin (could connect to RST pin)
-#define TOUCH_CS 5 // Chip select pin (T_CS) of touch screen              
+#define TOUCH_CS 5 // Chip select pin (T_CS) of touch screen   
+           
 ******************************************************************/
 
 /**********************************************************
